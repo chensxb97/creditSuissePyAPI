@@ -41,8 +41,6 @@ def evaluateParasite():
     logging.info("data sent for evaluation {}".format(rooms))
     result = []
     for r in rooms:
-        if r == 3:
-            continue
         result.append(checkInfection(r))
     logging.info("My result :{}".format(result))
     return json.dumps(result,indent=4)
@@ -57,12 +55,17 @@ def checkInfection(r):
 def checkPA(r):
     grid = r["grid"]
     intInd = r["interestedIndividuals"]
+    p1 = {} # p1 result
+    p2 = 0 # p2 result
+    if r["room"] == 3:
+        for i in intInd:
+            index = i.split(",")
+            p1[i] = -1
+        return p1,p2
+
     grid_after = [len(grid)*[0] for _ in range(len(grid))]
     rows = len(grid)
     cols = len(grid[0])
-
-    p1 = {} # p1 result
-    p2 = 0 # p2 result
 
     # No infections at all
     if not checkInfected(grid) or rows ==1:
@@ -100,6 +103,8 @@ def checkPA(r):
     return p1, p2
 
 def checkPB(r):
+    if r["room"] ==3:
+        return 0
     grid = r["grid"]
     intInd = r["interestedIndividuals"]
     grid_after = [len(grid)*[0] for _ in range(len(grid))]
@@ -137,6 +142,8 @@ def checkPB(r):
     return p3
 
 def checkPX(r):
+    if r["room"] ==3:
+        return 0
     grid = r["grid"]
     intInd = r["interestedIndividuals"]
     grid_after = [len(grid)*[0] for _ in range(len(grid))]
