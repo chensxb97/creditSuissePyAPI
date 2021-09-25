@@ -1,5 +1,6 @@
 import logging
 import json
+import sys
 from fractions import Fraction
 
 from flask import request, jsonify
@@ -28,16 +29,72 @@ def stockHunting():
     logging.info("interviews sent for evaluation {}".format(stocks))
     result = []
     for s in stocks:
-        result.append(processStocks(s))
+        output = processStock(s)
+        result.append(output)
     logging.info("My result :{}".format(result))
     return json.dumps(result)
 
 def processStocks(s):
-    return
+    eP = s["entryPoint"]
+    tP = s["targetPoint"]
+    x, y = eP["first"], eP["second"]
+    xT, yT = tP["first"],tP["second"]
+    gridKey = s["gridKey"]
+    gridDepth = s["gridDepth"]
+    hStep = s["horizontalStepper"]
+    vStep = s["verticalStepper"]
 
+    rows = abs(yT-y)+1
+    cols = abs(xT-x)+1
+    gridMap = [[0]*(cols) for _ in range(rows)]
+    value_gridMap =[[0]*(cols) for _ in range(rows)]
+    # Compute the cost and assign gridMap
+    for y in range(rows):
+        for x in range(cols):
+            riskLevel = computeRiskLevel(x,y,hStep,vStep,gridKey,gridDepth)
+            # print("Risklevel for x y ", x,y,": ", riskLevel)
+            if riskLevel%3 ==0:
+                gridMap[y][x] = "L"
+                value_gridMap[y][x] = 3
+            elif riskLevel%3 ==1:
+                gridMap[y][x] = "M"
+                value_gridMap[y][x] = 2
+            elif riskLevel%3 ==2:
+                gridMap[y][x] = "S"
+                value_gridMap[y][x] = 1
 
+    # print(gridMap)
+    output = {}
+    output["gridMap"] = gridMap
+    output["minimumCost"] = minCost(value_gridMap,xT,yT)
+    return output
 
-for s in sample_input:
-    processStocks(s)
+def computeRiskLevel(x,y,hStep,vStep,gridKey,gridDepth):
+    if x ==0 and y ==0:
+        return gridDepth%gridKey
+    elif x ==0:
+        return (y*vStep+gridDepth)%gridKey
+    elif y ==0:
+        return (x*hStep+gridDepth)%gridKey
+    else:
+        return (computeRiskLevel(x-1,y,hStep,vStep,gridKey,gridDepth)*computeRiskLevel(x,y-1,hStep,vStep,gridKey,gridDepth)+gridDepth)%gridKey
+
+# Returns cost of minimum cost path from (0,0) to (m, n) in mat[R][C]
+def minCost(cost, m, n):
+    if (n < 0 or m < 0):
+        return sys.maxsize
+    elif (m == 0 and n == 0):
+        return cost[m][n]
+    else:
+        return cost[m][n] + min( minCost(cost, m-1, n-1),
+                                minCost(cost, m-1, n),
+                                minCost(cost, m, n-1) )
+def min(x, y, z):
+    if (x < y):
+        return x if (x < z) else z
+    else:
+        return y if (y < z) else z
+# for s in sample_input:
+    # print(processStocks(s))
 
 

@@ -73,7 +73,6 @@ def mergeSort(arr):
   
          # Finding the mid of the array
         mid = len(arr)//2
-  
         # Dividing the array elements
         L = arr[:mid]
   
