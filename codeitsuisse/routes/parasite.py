@@ -3,7 +3,6 @@ import json
 import sys
 import itertools
 from itertools import chain, combinations
-from collections import OrderedDict
 
 from flask import request, jsonify
 
@@ -43,10 +42,10 @@ def evaluateParasite():
     for r in range(len(rooms)):
         result.append(checkInfection(rooms[r]))
     logging.info("My result :{}".format(result))
-    return json.dumps(result,indent=4)
+    return json.dumps(result)
 
 def checkInfection(r):
-    output = OrderedDict()
+    output = {}
     output["room"] = r["room"]
     output["p1"], output["p2"] = checkPA(r)
     output["p3"], output["p4"] = checkPB(r), checkPX(r)
@@ -78,8 +77,8 @@ def checkPA(r):
             for c in range(cols):
                 if grid[r][c] == 3:
                     infected = (r,c)
+                    break
         # Traverse the grid and inspect each individual
-        safe = True
         impossible = False
         for r in range(rows):
             for c in range(cols):
@@ -102,8 +101,6 @@ def checkPA(r):
     return p1, p2
 
 def checkPB(r):
-    if r["room"] == 3:
-        return 0
     grid = r["grid"]
     intInd = r["interestedIndividuals"]
     grid_after = [len(grid)*[0] for _ in range(len(grid))]
@@ -122,17 +119,19 @@ def checkPB(r):
             for c in range(cols):
                 if grid[r][c] == 3:
                     infected = (r,c)
+                    break
         # Traverse the grid and inspect each individual
         impossible = False
         for r in range(rows):
             for c in range(cols):
                 if grid[r][c] ==0 or grid[r][c] == 2 or grid[r][c] == 3: # Vacant space/Vaccinated/Al
-                    grid_after[r][c]=-1
+                    continue
                 elif grid[r][c] == 1: # Healthy
                     # Generate shortest path from infected to individual
                     grid_after[r][c] = findShortestPathLength_B(grid, infected, (r,c))
                     if grid_after[r][c] == -1:
                         impossible = True
+                        break
                     else:
                         p3 = max(grid_after[r][c],p3)
     # Scan the interested individuals and store result in p1
@@ -163,7 +162,7 @@ def checkPX(r):
             for c in range(cols):
                 if grid[r][c] == 3:
                     infected = (r,c)
-                if grid[r][c] ==0:
+                elif grid[r][c] ==0:
                     vacant.append((r,c))
         # Traverse the grid and inspect each individual
         impossible = False
