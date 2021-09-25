@@ -108,6 +108,8 @@ def checkPB(r):
     cols = len(grid[0])
 
     p3 = 0 # p3 result
+    if r["room"] == 3:
+        return 0
     
     # No infections at all
     if rows ==1:
