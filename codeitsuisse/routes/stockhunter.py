@@ -49,9 +49,10 @@ def processStocks(s):
     gridMap = [[0]*(cols) for _ in range(rows)]
     value_gridMap =[[0]*(cols) for _ in range(rows)]
     # Compute the cost and assign gridMap
+    computedValues = [[0]*(cols) for _ in range(rows)]
     for y in range(rows):
         for x in range(cols):
-            riskLevel = computeRiskLevel(x,y,hStep,vStep,gridKey,gridDepth)
+            riskLevel = computeRiskLevel(x,y,hStep,vStep,gridKey,gridDepth,computedValues)
             # print("Risklevel for x y ", x,y,": ", riskLevel)
             if riskLevel%3 ==0:
                 gridMap[y][x] = "L"
@@ -69,16 +70,19 @@ def processStocks(s):
     output["minimumCost"] = minCost(value_gridMap,xT,yT)
     return output
 
-def computeRiskLevel(x,y,hStep,vStep,gridKey,gridDepth):
+def computeRiskLevel(x,y,hStep,vStep,gridKey,gridDepth,computedValues):
+    if computedValues[x][y] !=0:
+        return computedValues[x][y]
     if x ==0 and y ==0:
-        return gridDepth%gridKey
+        computedValues[x][y] = gridDepth%gridKey
     elif x ==0:
-        return (y*vStep+gridDepth)%gridKey
+        computedValues[x][y] = (y*vStep+gridDepth)%gridKey
     elif y ==0:
-        return (x*hStep+gridDepth)%gridKey
+        computedValues[x][y] = (x*hStep+gridDepth)%gridKey
     else:
-        return (computeRiskLevel(x-1,y,hStep,vStep,gridKey,gridDepth)*computeRiskLevel(x,y-1,hStep,vStep,gridKey,gridDepth)+gridDepth)%gridKey
+        computedValues[x][y] = (computeRiskLevel(x-1,y,hStep,vStep,gridKey,gridDepth,computedValues)*computeRiskLevel(x,y-1,hStep,vStep,gridKey,gridDepth,computedValues)+gridDepth)%gridKey
 
+    return computedValues[x][y]
 # Returns cost of minimum cost path from (0,0) to (m, n) in mat[R][C]
 def minCost(cost, m, n):
     if (n < 0 or m < 0):
