@@ -347,9 +347,11 @@ def powerset(iterable):
     s = list(iterable)  # allows duplicate elements
     return chain.from_iterable(combinations(s, r) for r in range(len(s)+1))
 
-for i in range(len(sample_input)):
-    print(checkInfection(sample_input[i]))
 
 @app.route('/parasite', methods=['GET'])
 def view_output():
-    return checkInfection(sample_input[i])
+    result = []
+    for i in range(len(sample_input)):
+        result.append(checkInfection(sample_input[i]))
+    print(result)
+    return jsonify(result)
