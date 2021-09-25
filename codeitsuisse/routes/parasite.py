@@ -142,6 +142,7 @@ def checkPB(r):
     return p3
 
 def checkPX(r):
+    return 0
     if r["room"] ==3:
         return 0
     grid = r["grid"]
