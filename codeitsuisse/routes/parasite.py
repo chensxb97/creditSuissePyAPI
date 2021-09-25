@@ -2,6 +2,7 @@ import logging
 import json
 import sys
 import itertools
+import collections
 from itertools import chain, combinations
 from collections import OrderedDict
 
@@ -42,7 +43,7 @@ def evaluateParasite():
     for r in rooms:
         result.append(checkInfection(r))
     logging.info("My result :{}".format(result))
-    return jsonify(result)
+    return json.dumps(result,indent=4)
 
 def checkInfection(r):
     output = OrderedDict()
