@@ -172,7 +172,8 @@ def checkPX(r):
             return 0
             # Requires energy to remove vacant spaces
             # Loop through all vacant spaces one by one <BRUTE FORCE>
-        else:    
+        else:
+            return 0 
             for i in range(len(vacant)):
                 for combo in itertools.combinations(vacant,1):
                     p4 = len(combo)
