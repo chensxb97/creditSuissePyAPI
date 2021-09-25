@@ -29,7 +29,7 @@ def stockHunting():
     logging.info("interviews sent for evaluation {}".format(stocks))
     result = []
     for s in stocks:
-        output = processStock(s)
+        output = processStocks(s)
         result.append(output)
     logging.info("My result :{}".format(result))
     return json.dumps(result)
