@@ -48,23 +48,66 @@ def evaluateInterviews():
 def processInterview(i):
     questions = i["questions"]
     MAX = i["maxRating"]
-    min_val = questions[0][0]["from"]
-    max_val = questions[0][0]["to"]
+    from_list = []
+    to_list = []
     total_range = 0
     for q in questions:
         # Traverse through each question's set of ranges
         for i in q:
-            min_val = min(i["from"], min_val)
-            max_val = max(i["to"], max_val)
-    total_range = max_val - min_val + 1
+            to_list.append(i["to"])
+            from_list.append(i["from"])
+    mergeSort(from_list)
+    mergeSort(to_list)
+    total_range = to_list[-1] - from_list[0] + 1
+    print(total_range)
     probability = Fraction(total_range,MAX)
     p = probability.numerator
     q = probability.denominator
     output = {}
     output["p"], output["q"] = p,q
+    print(output)
     return output        
-# for i in sample_input:
-    # processInterview(i)
 
+def mergeSort(arr):
+    if len(arr) > 1:
+  
+         # Finding the mid of the array
+        mid = len(arr)//2
+  
+        # Dividing the array elements
+        L = arr[:mid]
+  
+        # into 2 halves
+        R = arr[mid:]
+  
+        # Sorting the first half
+        mergeSort(L)
+  
+        # Sorting the second half
+        mergeSort(R)
+  
+        i = j = k = 0
+  
+        # Copy data to temp arrays L[] and R[]
+        while i < len(L) and j < len(R):
+            if L[i] < R[j]:
+                arr[k] = L[i]
+                i += 1
+            else:
+                arr[k] = R[j]
+                j += 1
+            k += 1
+  
+        # Checking if any element was left
+        while i < len(L):
+            arr[k] = L[i]
+            i += 1
+            k += 1
+  
+        while j < len(R):
+            arr[k] = R[j]
+            j += 1
+            k += 1
 
-
+for i in sample_input:
+    processInterview(i)
