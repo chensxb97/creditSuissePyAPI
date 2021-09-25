@@ -32,7 +32,7 @@ def stockHunting():
         output = processStocks(s)
         result.append(output)
     logging.info("My result :{}".format(result))
-    return json.dumps(result)
+    return jsonify(result)
 
 def processStocks(s):
     eP = s["entryPoint"]
