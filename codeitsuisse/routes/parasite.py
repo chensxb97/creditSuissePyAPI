@@ -108,9 +108,6 @@ def checkPB(r):
     cols = len(grid[0])
 
     p3 = 0 # p3 result
-    if r["room"] == 3 or r["room"] == 2:
-        return 0
-    
     # No infections at all
     if rows ==1:
         p3 = -1
@@ -142,8 +139,6 @@ def checkPB(r):
     return p3
 
 def checkPX(r):
-    if r["room"] == 3 or r["room"] == 2:
-        return 0
     grid = r["grid"]
     intInd = r["interestedIndividuals"]
     grid_after = [len(grid)*[0] for _ in range(len(grid))]
