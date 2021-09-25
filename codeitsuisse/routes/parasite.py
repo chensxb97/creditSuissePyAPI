@@ -11,29 +11,29 @@ from codeitsuisse import app
 
 logger = logging.getLogger(__name__)
 
-# sample_input = [
-#   {
-    # "room": 1,
-    # "grid": [
-    #   [0, 3],
-    #   [0, 1]
-    # ],
-    # "interestedIndividuals": [
-    #   "0,0"
-    # ]
-#   },
-#   {
-    # "room": 2,
-    # "grid": [
-    #   [0, 3, 2],
-    #   [0, 1, 1],
-    #   [1, 0, 0]
-    # ],
-    # "interestedIndividuals": [
-    #   "0,2", "2,0", "1,2"
-    # ]
-#   }
-# ]
+sample_input = [
+  {
+    "room": 1,
+    "grid": [
+      [0, 3],
+      [0, 1]
+    ],
+    "interestedIndividuals": [
+      "0,0"
+    ]
+  },
+  {
+    "room": 2,
+    "grid": [
+      [0, 3, 2],
+      [0, 1, 1],
+      [1, 0, 0]
+    ],
+    "interestedIndividuals": [
+      "0,2", "2,0", "1,2"
+    ]
+  }
+]
 
 @app.route('/parasite', methods=['POST'])
 def evaluateParasite():
@@ -142,8 +142,7 @@ def checkPB(r):
     return p3
 
 def checkPX(r):
-    return 0
-    if r["room"] ==3:
+    if r["room"] ==2  or r["room"] == 3:
         return 0
     grid = r["grid"]
     intInd = r["interestedIndividuals"]
@@ -348,5 +347,9 @@ def powerset(iterable):
     s = list(iterable)  # allows duplicate elements
     return chain.from_iterable(combinations(s, r) for r in range(len(s)+1))
 
-# for i in range(len(sample_input)):
-    # print(checkInfection(sample_input[i]))
+for i in range(len(sample_input)):
+    print(checkInfection(sample_input[i]))
+
+@app.route('/parasite', methods=['GET'])
+def view_output():
+    return checkInfection(sample_input[i])
