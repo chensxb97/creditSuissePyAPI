@@ -10,29 +10,29 @@ from codeitsuisse import app
 
 logger = logging.getLogger(__name__)
 
-# sample_input = [
-#   {
-    # "room": 1,
-    # "grid": [
-    #   [0, 3],
-    #   [0, 1]
-    # ],
-    # "interestedIndividuals": [
-    #   "0,0"
-    # ]
-#   },
-#   {
-    # "room": 2,
-    # "grid": [
-    #   [0, 3, 2],
-    #   [0, 1, 1],
-    #   [1, 0, 0]
-    # ],
-    # "interestedIndividuals": [
-    #   "0,2", "2,0", "1,2"
-    # ]
-#   }
-# ]
+sample_input = [
+  {
+    "room": 1,
+    "grid": [
+      [0, 3],
+      [0, 1]
+    ],
+    "interestedIndividuals": [
+      "0,0"
+    ]
+  },
+  {
+    "room": 2,
+    "grid": [
+      [0, 3, 2],
+      [0, 1, 1],
+      [1, 0, 0]
+    ],
+    "interestedIndividuals": [
+      "0,2", "2,0", "1,2"
+    ]
+  }
+]
 
 @app.route('/parasite', methods=['POST'])
 def evaluateParasite():
@@ -49,6 +49,7 @@ def checkInfection(r):
     output["room"] = r["room"]
     output["p1"], output["p2"] = checkPA(r)
     output["p3"], output["p4"] = checkPB(r), checkPX(r)
+    print(output)
     return output
 
 def checkPA(r):
@@ -56,10 +57,6 @@ def checkPA(r):
     intInd = r["interestedIndividuals"]
     p1 = {} # p1 result
     p2 = 0 # p2 result
-    if r["room"] == 3 or r["room"] == 2:
-        for i in intInd:
-            p1[i] = -1
-        return p1,p2
 
     grid_after = [len(grid)*[0] for _ in range(len(grid))]
     rows = len(grid)
@@ -70,75 +67,65 @@ def checkPA(r):
         for i in intInd:
             p1[i] = -1
         p2 = -1
-    else:
-        # Locate infected individual
-        infected = ''
-        for r in range(rows):
-            for c in range(cols):
-                if grid[r][c] == 3:
-                    infected = (r,c)
-                    break
-        # Traverse the grid and inspect each individual
-        impossible = False
-        for r in range(rows):
-            for c in range(cols):
-                if grid[r][c] ==0 or grid[r][c] == 2 or grid[r][c] == 3: # Vacant space/Vaccinated/Already infected
-                    grid_after[r][c]=-1
-                elif grid[r][c] == 1: # Healthy
-                    # Generate shortest path from infected to individual
-                    grid_after[r][c] = findShortestPathLength_A(grid, infected, (r,c))
-                    if grid_after[r][c] == -1:
-                        impossible = True
-                    else:
-                        p2 = max(grid_after[r][c],p2)
-        if impossible == True:
-            p2 = -1
+        return p1,p2
+    # Locate infected individual
+    infected = ''
+    for r in range(rows):
+        for c in range(cols):
+            if grid[r][c] == 3:
+                infected = (r,c)
+                break
     # Scan the interested individuals and store result in p1
     for i in intInd:
         index = i.split(",")
-        p1[i] = grid_after[int(index[0])][int(index[1])]
-    
+        r = int(index[0])
+        c = int(index[1])
+        if grid[r][c] ==0 or grid[r][c] == 2 or grid[r][c] == 3: # Vacant space/Vaccinated/Already infected
+            p1[i] = -1
+        else: # Healthy
+             # Generate shortest path from infected to individual
+            p1[i] = findShortestPathLength_A(grid, infected, (r,c))
+
+    for r in range(rows):
+        for c in range(cols):
+            if grid[r][c] ==0 or grid[r][c] == 2 or grid[r][c] == 3: # Vacant space/Vaccinated/Already infected
+                continue
+            else:
+                dist = findShortestPathLength_A(grid, infected, (r,c))
+                if dist == -1:
+                    p2 = -1
+                    break
+                else:
+                    p2 = max(p2,dist)
     return p1, p2
 
 def checkPB(r):
     grid = r["grid"]
-    intInd = r["interestedIndividuals"]
-    grid_after = [len(grid)*[0] for _ in range(len(grid))]
     rows = len(grid)
     cols = len(grid[0])
 
     p3 = 0 # p3 result
-    # No infections at all
-    if rows ==1:
-        p3 = -1
-    else:
-        # Locate infected individual
-        infected = ''
-        for r in range(rows):
-            for c in range(cols):
-                if grid[r][c] == 3:
-                    infected = (r,c)
+    infected = ''
+    for r in range(rows):
+        for c in range(cols):
+            if grid[r][c] == 3:
+                infected = (r,c)
+                break
+    for r in range(rows):
+        for c in range(cols):
+            if grid[r][c] ==0 or grid[r][c] == 2 or grid[r][c] == 3: # Vacant space/Vaccinated/Already infected
+                continue
+            else:
+                dist = findShortestPathLength_B(grid, infected, (r,c))
+                if dist == -1:
+                    p3 = -1
                     break
-        # Traverse the grid and inspect each individual
-        impossible = False
-        for r in range(rows):
-            for c in range(cols):
-                if grid[r][c] ==0 or grid[r][c] == 2 or grid[r][c] == 3: # Vacant space/Vaccinated/Al
-                    continue
-                elif grid[r][c] == 1: # Healthy
-                    # Generate shortest path from infected to individual
-                    grid_after[r][c] = findShortestPathLength_B(grid, infected, (r,c))
-                    if grid_after[r][c] == -1:
-                        impossible = True
-                        break
-                    else:
-                        p3 = max(grid_after[r][c],p3)
-    # Scan the interested individuals and store result in p1
-    if impossible == True:
-        p3 = -1
+                else:
+                    p3 = max(p3,dist)
     return p3
 
 def checkPX(r):
+    return -1
     grid = r["grid"]
     intInd = r["interestedIndividuals"]
     grid_after = [len(grid)*[0] for _ in range(len(grid))]
@@ -331,3 +318,6 @@ def findShortestPathLength_B(mat, src, dest):
 def powerset(iterable):
     s = list(iterable)  # allows duplicate elements
     return chain.from_iterable(combinations(s, r) for r in range(len(s)+1))
+
+for i in sample_input:
+    checkInfection(i)
