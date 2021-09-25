@@ -3,6 +3,7 @@ import json
 import sys
 import itertools
 from itertools import chain, combinations
+from collections import OrderedDict
 
 from flask import request, jsonify
 
@@ -44,7 +45,7 @@ def evaluateParasite():
     return jsonify(result)
 
 def checkInfection(r):
-    output = {}
+    output = OrderedDict()
     output["room"] = r["room"]
     output["p1"], output["p2"] = checkPA(r)
     output["p3"], output["p4"] = checkPB(r), checkPX(r)
