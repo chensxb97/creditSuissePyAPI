@@ -2,7 +2,6 @@ import logging
 import json
 import sys
 import itertools
-import collections
 from itertools import chain, combinations
 from collections import OrderedDict
 
@@ -12,29 +11,30 @@ from codeitsuisse import app
 
 logger = logging.getLogger(__name__)
 
-sample_input = [
-  {
-    "room": 1,
-    "grid": [
-      [0, 3],
-      [0, 1]
-    ],
-    "interestedIndividuals": [
-      "0,0"
-    ]
-  },
-  {
-    "room": 2,
-    "grid": [
-      [0, 3, 2],
-      [0, 1, 1],
-      [1, 0, 0]
-    ],
-    "interestedIndividuals": [
-      "0,2", "2,0", "1,2"
-    ]
-  }
-]
+# sample_input = [
+#   {
+    # "room": 1,
+    # "grid": [
+    #   [0, 3],
+    #   [0, 1]
+    # ],
+    # "interestedIndividuals": [
+    #   "0,0"
+    # ]
+#   },
+#   {
+    # "room": 2,
+    # "grid": [
+    #   [0, 3, 2],
+    #   [0, 1, 1],
+    #   [1, 0, 0]
+    # ],
+    # "interestedIndividuals": [
+    #   "0,2", "2,0", "1,2"
+    # ]
+#   }
+# ]
+
 @app.route('/parasite', methods=['POST'])
 def evaluateParasite():
     rooms = request.get_json()
@@ -335,9 +335,8 @@ def findShortestPathLength_B(mat, src, dest):
         return -1
 
 def powerset(iterable):
-    "powerset([1,2,3]) --> () (1,) (2,) (3,) (1,2) (1,3) (2,3) (1,2,3)"
     s = list(iterable)  # allows duplicate elements
     return chain.from_iterable(combinations(s, r) for r in range(len(s)+1))
 
-for i in range(len(sample_input)):
-    print(checkInfection(sample_input[i]))
+# for i in range(len(sample_input)):
+    # print(checkInfection(sample_input[i]))
