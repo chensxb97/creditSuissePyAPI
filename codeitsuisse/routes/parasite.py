@@ -67,7 +67,7 @@ def checkPA(r):
     cols = len(grid[0])
 
     # No infections at all
-    if not checkInfected(grid) or rows ==1:
+    if rows ==1:
         for i in intInd:
             p1[i] = -1
         p2 = -1
@@ -113,7 +113,7 @@ def checkPB(r):
     p3 = 0 # p3 result
     
     # No infections at all
-    if not checkInfected(grid) or rows ==1:
+    if rows ==1:
         p3 = -1
     else:
         # Locate infected individual
@@ -153,7 +153,7 @@ def checkPX(r):
     minP4 = p4
 
     # No infections at all
-    if not checkInfected(grid) or rows ==1:
+    if rows ==1:
         p4 = 0
     else:
         # Locate infected individuals and vacant spaces
@@ -199,15 +199,6 @@ def checkPX(r):
                     return p4
     return p4
 # Helper functions
-def checkInfected(grid):
-    r = len(grid)
-    c = len(grid[0])
-    for i in range(r):
-        for j in range(c):
-            if grid[i][j] ==3:
-                return True
-    return False
-
 def isSafe(mat, visited, x, y):
     return 0 <= x < len(mat) and 0 <= y < len(mat[0]) and \
            not (mat[x][y] == 0 or visited[x][y])
@@ -315,7 +306,6 @@ def findShortestPath_B(mat, visited, i, j, dest, min_dist=sys.maxsize, dist=0):
     visited[i][j] = 0
  
     return min_dist
- 
  
 # Wrapper over findShortestPath_B() function
 def findShortestPathLength_B(mat, src, dest):

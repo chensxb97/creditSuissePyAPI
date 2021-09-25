@@ -7,7 +7,6 @@ logger = logging.getLogger(__name__)
 def default_route():
     return "Python Template"
 
-
 logger = logging.getLogger()
 handler = logging.StreamHandler()
 formatter = logging.Formatter(
