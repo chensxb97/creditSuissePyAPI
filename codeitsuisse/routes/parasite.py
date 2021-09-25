@@ -1,6 +1,8 @@
 import logging
 import json
 import sys
+import itertools
+from itertools import chain, combinations
 
 from flask import request, jsonify
 
@@ -45,8 +47,7 @@ def checkInfection(r):
     output = {}
     output["room"] = r["room"]
     output["p1"], output["p2"] = checkPA(r)
-    output["p3"] = checkPB(r)
-    output["p4"] = checkPX(r)
+    output["p3"], output["p4"] = checkPB(r), checkPX(r)
     return output
 
 def checkPA(r):
@@ -114,7 +115,6 @@ def checkPB(r):
                 if grid[r][c] == 3:
                     infected = (r,c)
         # Traverse the grid and inspect each individual
-        safe = True
         impossible = False
         for r in range(rows):
             for c in range(cols):
@@ -133,9 +133,61 @@ def checkPB(r):
     return p3
 
 def checkPX(r):
-    p4 = 0
-    return p4
+    grid = r["grid"]
+    intInd = r["interestedIndividuals"]
+    grid_after = [len(grid)*[0] for _ in range(len(grid))]
+    rows = len(grid)
+    cols = len(grid[0])
+    
+    p4 = sys.maxsize # p4 result
+    minP4 = p4
 
+    # No infections at all
+    if not checkInfected(grid) or rows ==1:
+        p4 = 0
+    else:
+        # Locate infected individuals and vacant spaces
+        infected = '' 
+        vacant = []
+        for r in range(rows):
+            for c in range(cols):
+                if grid[r][c] == 3:
+                    infected = (r,c)
+                if grid[r][c] ==0:
+                    vacant.append((r,c))
+        # Traverse the grid and inspect each individual
+        impossible = False
+        for r in range(rows):
+            for c in range(cols):
+                if grid[r][c] ==0 or grid[r][c] == 2 or grid[r][c] == 3: # Vacant space/Vaccinated/Already infected
+                    continue
+                elif grid[r][c] == 1: # Healthy
+                    # Generate shortest path from infected to individual
+                    grid_after[r][c] = findShortestPathLength_A(grid, infected, (r,c))
+                    if grid_after[r][c] == -1:
+                        impossible = True
+        if impossible == False:
+            return 0
+            # Requires energy to remove vacant spaces
+            # Loop through all vacant spaces one by one <BRUTE FORCE>
+        else:    
+            for i in range(len(vacant)):
+                for combo in itertools.combinations(vacant,1):
+                    p4 = len(combo)
+                    grid_new = grid
+                    for i in combo:
+                        grid_new[i[0]][i[1]] = 2
+                    for r in range(rows):
+                        for c in range(cols):
+                            if grid_new[r][c] ==0 or grid_new[r][c] == 2 or grid_new[r][c] == 3: # Vacant space/Vaccinated/Already infected
+                                continue
+                            elif grid[r][c] == 1: # Healthy
+                                # Generate shortest path from infected to individual
+                                grid_after[r][c] = findShortestPathLength_A(grid_new, infected, (r,c))
+                                if grid_after[r][c] == -1:
+                                    continue 
+                    return p4
+    return p4
 # Helper functions
 def checkInfected(grid):
     r = len(grid)
@@ -279,6 +331,11 @@ def findShortestPathLength_B(mat, src, dest):
         return min_dist
     else:
         return -1
+
+def powerset(iterable):
+    "powerset([1,2,3]) --> () (1,) (2,) (3,) (1,2) (1,3) (2,3) (1,2,3)"
+    s = list(iterable)  # allows duplicate elements
+    return chain.from_iterable(combinations(s, r) for r in range(len(s)+1))
 
 for i in range(len(sample_input)):
     print(checkInfection(sample_input[i]))
