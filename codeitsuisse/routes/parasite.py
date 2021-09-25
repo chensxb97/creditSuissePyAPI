@@ -41,6 +41,8 @@ def evaluateParasite():
     logging.info("data sent for evaluation {}".format(rooms))
     result = []
     for r in rooms:
+        if r == 3:
+            continue
         result.append(checkInfection(r))
     logging.info("My result :{}".format(result))
     return json.dumps(result,indent=4)
@@ -173,7 +175,6 @@ def checkPX(r):
             # Requires energy to remove vacant spaces
             # Loop through all vacant spaces one by one <BRUTE FORCE>
         else:
-            return 0 
             for i in range(len(vacant)):
                 for combo in itertools.combinations(vacant,1):
                     p4 = len(combo)
