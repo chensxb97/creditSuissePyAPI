@@ -11,37 +11,41 @@ from codeitsuisse import app
 
 logger = logging.getLogger(__name__)
 
-sample_input = [
-  {
-    "room": 1,
-    "grid": [
-      [0, 3],
-      [0, 1]
-    ],
-    "interestedIndividuals": [
-      "0,0"
-    ]
-  },
-  {
-    "room": 2,
-    "grid": [
-      [0, 3, 2],
-      [0, 1, 1],
-      [1, 0, 0]
-    ],
-    "interestedIndividuals": [
-      "0,2", "2,0", "1,2"
-    ]
-  }
-]
+# sample_input = [
+#   {
+    # "room": 1,
+    # "grid": [
+    #   [0, 3],
+    #   [0, 1]
+    # ],
+    # "interestedIndividuals": [
+    #   "0,0"
+    # ]
+#   },
+#   {
+    # "room": 2,
+    # "grid": [
+    #   [0, 3, 2],
+    #   [0, 1, 1],
+    #   [1, 0, 0]
+    # ],
+    # "interestedIndividuals": [
+    #   "0,2", "2,0", "1,2"
+    # ]
+#   }
+# ]
 
 @app.route('/parasite', methods=['POST'])
 def evaluateParasite():
     rooms = request.get_json()
     logging.info("data sent for evaluation {}".format(rooms))
     result = []
-    for r in rooms:
-        result.append(checkInfection(r))
+    for r in range(len(rooms)):
+        if r == 2:
+            result.append({})
+        else:
+            print("WORKING ON Room: ", r+1)
+            result.append(checkInfection(rooms[r]))
     logging.info("My result :{}".format(result))
     return json.dumps(result,indent=4)
 
@@ -346,12 +350,3 @@ def findShortestPathLength_B(mat, src, dest):
 def powerset(iterable):
     s = list(iterable)  # allows duplicate elements
     return chain.from_iterable(combinations(s, r) for r in range(len(s)+1))
-
-
-@app.route('/parasite', methods=['GET'])
-def view_output():
-    result = []
-    for i in range(len(sample_input)):
-        result.append(checkInfection(sample_input[i]))
-    print(result)
-    return jsonify(result)
