@@ -8,7 +8,7 @@ from codeitsuisse import app
 
 logger = logging.getLogger(__name__)
 
-@app.route('/tic-tac-toe', methods=['POST', 'GET'])
+@app.route('/stonks', methods=['POST'])
 def playGame():
     if request.method == 'POST':
         data = request.get_json()

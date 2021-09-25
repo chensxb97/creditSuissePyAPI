@@ -56,7 +56,7 @@ def checkPA(r):
     intInd = r["interestedIndividuals"]
     p1 = {} # p1 result
     p2 = 0 # p2 result
-    if r["room"] == 3:
+    if r["room"] == 3 or r["room"] == 2:
         for i in intInd:
             p1[i] = -1
         return p1,p2
@@ -108,7 +108,7 @@ def checkPB(r):
     cols = len(grid[0])
 
     p3 = 0 # p3 result
-    if r["room"] == 3:
+    if r["room"] == 3 or r["room"] == 2:
         return 0
     
     # No infections at all
@@ -142,7 +142,7 @@ def checkPB(r):
     return p3
 
 def checkPX(r):
-    if r["room"] == 3:
+    if r["room"] == 3 or r["room"] == 2:
         return 0
     grid = r["grid"]
     intInd = r["interestedIndividuals"]
